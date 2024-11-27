@@ -286,7 +286,7 @@
             const chatroomName = JSON.parse(document.getElementById('chatroom_name').textContent);
 
             const chatSocket = new WebSocket(
-                'ws://' 
+                'wss://' 
                 + window.location.host 
                 + '/ws/chatroom/' 
                 + chatroomName 

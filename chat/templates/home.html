@@ -95,7 +95,7 @@
         document.addEventListener('DOMContentLoaded', function(e){
             console.log(window.location.host);
             const homeSocket = new WebSocket(
-                'ws://' 
+                'wss://' 
                 + window.location.host 
                 + '/ws/message_notification/' 
             );
