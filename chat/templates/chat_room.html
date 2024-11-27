@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+{% block title %}| Chat Room{% endblock title %}
+{% block content %}
+
+        <h4 hidden>Online: <span id="online-count"> </span></h4>
+
+        {{ group_name|json_script:"chatroom_name" }}
+
+
+
+    <div class="flex justify-center">
+        <div class="w-[90%] m-auto mt-5 absolute">
+            <!-- Header -->
+            <div class="flex justify-between items-center bg-white  p-4">
+                <header class=" text-gray-700 flex items-center gap-5">
+                    <a href="{% url 'home' %}"
+                        class="inline-flex items-center border hover:border-indigo-300 px-3 py-1.5 rounded-md text-indigo-500 hover:bg-indigo-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18">
+                            </path>
+                        </svg>
+                    </a>
+                    <div class="flex">
+                        <h1 class="text-2xl font-bold">
+                            {% if group_chat_name %} {{ group_chat_name }} {% else %} {% for member in other_user %} {{member}} {% endfor %} {% endif %}
+                        </h1>
+                        {% comment %} <div id="active-status" class=" relative -end-1 top-1 w-3 h-3 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full dark:border-gray-900"> </div> {% endcomment %}
+                    </div>
+                    
+                </header>
+
+                    
+                {% if group_chat_name %}
+                    <div class="relative ml-3">
+                        <button
+                            type="button"
+                            class="relative flex rounded-full  text-sm focus:outline-none  focus:ring-offset-2 focus:ring-offset-gray-800"
+                            id="menu-button2"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                        >
+                            <span class="text-3xl font-bold rotate-90 text-black cursor-pointer">...</span>
+                        </button>
+
+                        <!-- User Menu Dropdown (Hidden for now) -->
+                        <div
+                            class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="menu-button2"
+                            tabindex="-1"
+                            id="user-menu2"
+                        >
+                            <span
+                                class="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="open-modal-btn2"
+                            >
+                                All Members
+                            </span>
+
+                            <span
+                                class="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="open-modal-btn3"
+                            >
+                                Add Member
+                            </span>
+                            
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+    
+            <!-- Chat Message -->
+             <div id="chat-log" class="h-[65vh] overflow-y-auto p-4 ">
+                
+                {% for chat in chat_message reversed %}
+                    {% if chat.body %}
+                        {% if chat.author == request.user %}
+                        <!-- Outgoing Message -->
+                        <div class="flex items-center justify-end mb-4 cursor-pointer">
+                            <div>
+                                <p class="text-xs text-gray-400 text-end pr-1">{{ chat.author }}</p>
+                                <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                                    <p>{{ chat.body }}</p>
+                                </div>
+                                <p class="text-xs text-gray-400 text-end pr-1">{{ chat.created }}</p>
+                            </div>
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                                <img src="{{ chat.author.profile_picture.url }}" alt="My Avatar" class="w-8 h-8 rounded-full">
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Incoming Message -->
+                        <div class="flex items-center mb-4 cursor-pointer">
+                            
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                                <img src="{{ chat.author.profile_picture.url }}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 pl-1">{{ chat.author }}</p>
+                                <div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+                                    <p class="text-black">{{ chat.body }}</p>
+                                </div>
+                                <p class="text-xs text-gray-400 pl-1">{{ chat.created }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% elif chat.file %}
+                        {% if chat.author == request.user %}
+                            <!-- Outgoing Message -->
+                            <div class="flex items-center justify-end mb-4 cursor-pointer">
+                                <div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">{{ chat.author }}</p>
+                                    <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                                        {% if chat.is_image %}
+                                        <img src="{{ chat.file.url }}" class="max-w-[240px] sm:max-w-[360px] w-auto h-auto" alt="Sent image">
+                                        {% else %}
+                                        &#x1F4CE; <a class="cursor-pointer hover:underline " href="{{ chat.file.url }}" download>{{ chat.filename}}</a>
+                                        {% endif %}
+                                        
+                                    </div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">{{ chat.created }}</p>
+                                </div>
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                                    <img src="{{ chat.author.profile_picture.url }}" alt="My Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- Incoming Message -->
+                            <div class="flex items-center mb-4 cursor-pointer">
+                                    
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                                    <img src="{{ chat.author.profile_picture.url }}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 pl-1">{{ chat.author }}</p>
+                                    <div class="flex max-w-96t text-black bg-white rounded-lg p-3 gap-3">
+                                        {% if chat.is_image %}
+                                        <img src="{{ chat.file.url }}" class="max-w-[240px] sm:max-w-[360px] w-auto h-auto" alt="Sent image">
+                                        {% else %}
+                                        &#x1F4CE; <a class="cursor-pointer hover:underline" href="{{ chat.file.url }}" download>{{ chat.filename}}</a>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-xs text-gray-400 pl-1">{{ chat.created }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                
+             </div>
+             
+             <!-- Chat Input -->
+                <footer class="bg-white border-t rounded-sm border-gray-300 p-4 relative bottom-0 w-[100%]">
+                 <div class="flex items-center">
+                    <button id="file-btn" class="mr-1 sm:mr-4 rounded-md px-2 py-1 border-2 font-extrabold text-2xl hover:bg-gray-200 text-black ">📎</button>
+                     <textarea id="message-box" class="w-full h-11 p-2  resize-none rounded-md border bg-white text-black border-gray-400 focus:outline-none focus:ring-2 focus:border-blue-500"></textarea>
+                     <button id="remove-file-btn" class="hidden text-red-500 text-xl font-bold ml-2">✖</button>
+                    <button id="send-btn" class="bg-indigo-500 text-white px-4 py-2 rounded-md ml-1 sm:ml-2 hover:bg-indigo-600">Send</button>
+                 </div>
+                 <input type="hidden" name="csrfmiddlewaretoken" id="csrf-token" value="{{ csrf_token }}">
+             </footer>
+        </div>
+    </div>
+
+    <div id="modal2" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-80 max-w-md">
+            <h2 class="text-xl text-black font-bold mb-4">All Members:</h2>
+            
+            <div class="mb-4">
+                <div class="mt-2 border-2 text-gray-700 text-xl font-bold h-32 overflow-y-auto flex justify-center">
+                    <ul class="space-y-2 py-2">
+                        {% for member in other_user %} 
+                         
+                        <li class="text-center flex justify-center items-center m-auto">
+                            <span>➡️{{member}}</span> 
+                        </li>
+                        {% endfor %}
+                        
+                    </ul>
+                  </div>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button id="close-modal-btn2" class="text-gray-500 hover:text-gray-700">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal3" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-80 max-w-md">
+            <h2 class="text-xl text-black font-bold mb-4">Add Member:</h2>
+            
+            <div class="mb-4">
+                <div class="mt-2 border-2 text-gray-700 text-xl font-bold h-32 overflow-y-auto flex justify-center">
+                    <ul class="space-y-2 py-2">
+                        {% for friend in add_friend_to_group %}
+                            <li class="text-center flex justify-center items-center m-auto">
+                                <span>➡️{{friend}}</span> 
+                                <a href="{% url 'add_group_member' group_name friend.id %}"><i class="fa-solid fa-user-plus ml-2 cursor-pointer"></i></a>   
+                            </li>
+                            
+                        {% endfor %}
+                    </ul>
+                  </div>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button id="close-modal-btn3" class="text-gray-500 hover:text-gray-700">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () { 
+            const modal3 = document.getElementById('modal3');
+            const openModalBtn3 = document.getElementById('open-modal-btn3');
+            const closeModalBtn3 = document.getElementById('close-modal-btn3');
+            
+            if (openModalBtn3 && closeModalBtn3) { 
+                openModalBtn3.addEventListener('click', function() {
+                    modal3.classList.remove('hidden');
+                });
+            
+                closeModalBtn3.addEventListener('click', function() {
+                    modal3.classList.add('hidden');
+                });
+            
+                window.addEventListener('click', function(e) {
+                    if (e.target === modal3) {
+                        modal3.classList.add('hidden');
+                    }
+                });
+            }
+        
+            const modal2 = document.getElementById('modal2');
+            const openModalBtn2 = document.getElementById('open-modal-btn2');
+            const closeModalBtn2 = document.getElementById('close-modal-btn2');
+            
+            if (openModalBtn2 && closeModalBtn2) { 
+                openModalBtn2.addEventListener('click', function() {
+                    modal2.classList.remove('hidden');
+                });
+            
+                closeModalBtn2.addEventListener('click', function() {
+                    modal2.classList.add('hidden');
+                });
+            
+                window.addEventListener('click', function(e) {
+                    if (e.target === modal2) {
+                        modal2.classList.add('hidden');
+                    }
+                });
+            }
+        
+            // Menu button
+            const menuButton = document.getElementById("menu-button2");
+            if (menuButton) { 
+                menuButton.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    const menu = document.getElementById("user-menu2");
+                    if (menu) { 
+                        menu.classList.toggle("hidden");
+                    }
+                });
+        
+                document.addEventListener("click", (event) => {
+                    const menu = document.getElementById("user-menu2");
+                    if (menu && !menu.contains(event.target) && !menuButton.contains(event.target)) {
+                        menu.classList.add("hidden");
+                    }
+                });
+            }
+        });
+        
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(e) {
+            const chatroomName = JSON.parse(document.getElementById('chatroom_name').textContent);
+
+            const chatSocket = new WebSocket(
+                'ws://' 
+                + window.location.host 
+                + '/ws/chatroom/' 
+                + chatroomName 
+                + '/'
+            );
+
+            chatSocket.onopen = function() {
+                // console.log('WebSocket connection established.');
+                const chatLog = document.getElementById('chat-log');
+                chatLog.scrollTop = chatLog.scrollHeight;
+            };
+
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data); 
+                // console.log(data); 
+            
+                if (data.online_count !== undefined) {
+                    // Update the online count if the message includes online user count
+                    document.getElementById('online-count').textContent = data.online_count;
+                } else {
+                    const chatLog = document.getElementById('chat-log'); 
+                    const messageElement = document.createElement('div'); 
+            
+                    // Check if the message is a text message
+                    if (data.body){
+                        // console.log(data);
+                        // console.log('{{ request.user }}');
+
+                        if (data.author == '{{ request.user }}') {
+                            
+                            messageElement.classList.add('flex', 'items-center', 'justify-end', 'mb-4', 'cursor-pointer');
+                            messageElement.innerHTML = `
+                                <div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">${data.author}</p>
+                                    <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                                        <p>${data.body}</p>
+                                    </div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">${data.created}</p>
+                                </div>
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                                    <img src="${data.profile_picture}" alt="My Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                            `;
+                        } else {
+                            messageElement.classList.add('flex', 'items-center', 'mb-4', 'cursor-pointer');
+                            messageElement.innerHTML = `
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                                    <img src="${data.profile_picture}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 pl-1">${data.author}</p>
+                                    <div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+                                        <p class="text-gray-700">${data.body}</p>
+                                    </div>
+                                    <p class="text-xs text-gray-400 pl-1">${data.created}</p>
+                                </div>
+                            `;
+                        }
+            
+                    } else if (data.file_url) {
+                        if (data.author == '{{ request.user }}') {
+                            messageElement.classList.add('flex', 'items-center', 'justify-end', 'mb-4', 'cursor-pointer');
+                            let is_image = data.is_image 
+                                        ? `<img src="${data.file_url}" class="max-w-[240px] sm:max-w-[360px] w-auto h-auto" alt="Sent image">` 
+                                        : `&#x1F4CE; <a class="cursor-pointer hover:underline" href="${data.file_url}" download>${data.filename}</a>`;
+
+                            messageElement.innerHTML = `
+                                <div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">${data.author}</p>
+                                    <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">      
+                                        ${is_image}
+                                    </div>
+                                    <p class="text-xs text-gray-400 text-end pr-1">${data.created}</p>
+                                </div>
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                                    <img src="${data.profile_picture}" alt="My Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                            `;
+                        } else {
+                            messageElement.classList.add('flex', 'items-center', 'mb-4', 'cursor-pointer');
+                            let is_image = data.is_image 
+                                        ? `<img src="${data.file_url}" class="max-w-[240px] sm:max-w-[360px] w-auto h-auto" alt="Sent image">` 
+                                        : `&#x1F4CE; <a class="cursor-pointer hover:underline" href="${data.file_url}" download>${data.filename}</a>`;
+                            messageElement.innerHTML = `
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                                    <img src="${data.profile_picture}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 pl-1">${data.author}</p>
+                                    <div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+                                        ${is_image}
+                                    </div>
+                                    <p class="text-xs text-gray-400 pl-1">${data.created}</p>
+                                </div>
+                            `;
+                        }
+                    }
+            
+                    // Append the message to the chat log and scroll to the bottom
+                    chatLog.appendChild(messageElement);
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                }
+            };
+            
+
+            chatSocket.onclose = function(e) {
+                // console.error('WebSocket connection closed unexpectedly:', e.reason);
+            };
+
+            chatSocket.onerror = function(e) {
+                // console.error('WebSocket error observed:', e);
+            };
+
+            
+            // toggle btn
+
+            const fileBtn = document.getElementById('file-btn');
+            const messageBox = document.getElementById('message-box');
+            const sendBtn = document.getElementById('send-btn');
+            const removeFileBtn = document.getElementById('remove-file-btn');
+            let fileInput;
+    
+            const createFileInput = () => {
+                const fileInputElement = document.createElement('input');
+                fileInputElement.type = 'file';
+                fileInputElement.id = 'file'; 
+                fileInputElement.classList.add('hidden');
+                fileInputElement.addEventListener('change', handleFileChange);
+                document.body.appendChild(fileInputElement);
+                return fileInputElement;
+            };
+    
+            fileBtn.addEventListener('click', () => {
+                if (!fileInput) {
+                    fileInput = createFileInput();
+                }
+                fileInput.click(); 
+            });
+    
+            function handleFileChange(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    messageBox.value = `📎${file.name}`;
+                    messageBox.type = 'text'; 
+                    removeFileBtn.classList.remove('hidden'); 
+                    messageBox.disabled = true;
+                }
+            }
+    
+            removeFileBtn.addEventListener('click', () => {
+                messageBox.value = ''; 
+                messageBox.type = 'text';  
+                removeFileBtn.classList.add('hidden');
+                fileInput.value = ''; 
+                messageBox.disabled = false;
+            });
+       
+
+            // Send button functionality (for sending text or file)
+            sendBtn.addEventListener('click', () => {
+                const messageText = messageBox.value.trim();
+                const file = fileInput ? fileInput.files[0] : null;
+
+                if (messageText || file) {
+                    // If message text exists
+                    if (messageText && !file) {
+                        // console.log('Text message:', messageText);
+                        chatSocket.send(JSON.stringify({
+                            'body': messageText
+                        }));
+                    }
+
+                    // If a file exists, send it
+                    if (file) {
+                            const fileInput = document.getElementById('file');
+                            const file = fileInput.files[0];
+                        
+                            if (!file) {
+                                // console.log('No file selected.');
+                                return;
+                            }
+                        
+                            const formData = new FormData();
+                            formData.append('file', file);
+                        
+                            fetch(`/fileupload/${chatroomName}/`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                                }
+                            })
+                            .then(response => response.text())
+                            .then(data => {
+                                // console.log('File uploaded successfully');
+                                // After uploading the file, you can send the file URL via WebSocket
+                                chatSocket.send(JSON.stringify({
+                                    'file_url': data.file_url, 
+                                    'filename': data.filename,
+                                    'created': data.created,
+                                    'author': '{{ request.user }}'
+                                }));
+                            })
+                            .catch(error => {
+                                // console.error('Error uploading file:', error);
+                            });
+                    }
+
+                    // Reset message box and file input after sending
+                    if (messageBox) {
+                        messageBox.value = ''; // Clear the text input
+                    }
+
+                    if (fileInput) {
+                        fileInput.value = ''; // Clear file input if it exists
+                    }
+                    messageBox.disabled = false; 
+                    removeFileBtn.classList.add('hidden'); // Hide the remove button after sending
+                } else {
+                    // console.log('Cannot send an empty message or file.');
+                }
+            });
+  
+
+        });
+    </script>
+
+
+
+{% endblock content %}
+

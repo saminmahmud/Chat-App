@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}| Sign Up{% endblock title %}
+{% block content %}
+
+{% if form.non_field_errors %} 
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger mt-2 w-[90%] m-auto" role="alert">
+            <strong>Error!</strong>
+            <p class="mb-0">{{ error }}</p>
+        </div>    
+    {% endfor %} 
+{% endif %}
+
+
+
+<div class=" flex items-center justify-center w-[90%] m-auto mt-2">
+    <div class=" font-[sans-serif] w-full">
+      <div class="flex flex-col items-center justify-center py-6 px-4">
+        <div class="w-full max-w-md">
+          <div class="p-8 rounded-2xl bg-white shadow">
+            <h2 class="text-gray-800 text-center text-2xl font-bold">Sign Up</h2>
+            <form method="post" class="mt-8 space-y-4">
+                {% csrf_token %}
+                {% comment %} {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %} {% endcomment %}
+
+              <div>
+                <label  for="email" class="text-gray-800 text-sm mb-2 block">Email</label>
+                <div class="relative flex items-center">
+                  <input id="email" name="email" type="email" required class="w-full  bg-white text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="Enter email" />
+                </div>
+              </div>
+  
+              <div>
+                <label for="password1" class="text-gray-800 text-sm mb-2 block">Password</label>
+                <div class="relative flex items-center">
+                  <input id="password1" name="password1" type="password" required class="w-full bg-white text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="Enter password" />
+                </div>
+              </div>
+
+              <div>
+                <label for="password2" class="text-gray-800 text-sm mb-2 block">Confirm Password</label>
+                <div class="relative flex items-center">
+                  <input id="password2" name="password2" type="password" required class="w-full bg-white text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="Confirm your password" />
+                </div>
+              </div>
+  
+              <div class="!mt-8">
+                <button type="submit" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                  Sign Up
+                </button>
+              </div>
+              <p class="text-gray-800 text-sm !mt-8 text-center">Have an account? <a href="{% url 'login' %}" class="text-blue-600 hover:underline ml-1 whitespace-nowrap font-semibold">Login here</a></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

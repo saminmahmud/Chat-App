@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}| Add Friend{% endblock title %}
+{% block content %}
+<div class="w-[90%] m-auto my-5">
+    <!-- Search -->
+    <div class="flex justify-center items-center mt-2">
+        <input
+            id="search"
+            type="text"
+            class="w-[300px] p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search for friends..."
+        />
+    </div>
+
+    <!-- received requests -->
+    <div class="mt-16" id="friend-requests-container">
+        <h1 class="text-2xl lg:text-3xl font-bold font-mono">
+            Friend Requests:
+        </h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4" id="friend-requests-list">
+            {% for friend_request in friend_requests %}
+            <div class="friend-request-item bg-white flex justify-between rounded-lg shadow-md overflow-hidden max-w-xs w-full" data-username="{{ friend_request.sender.username }}">
+                <div class="flex items-center p-4">
+                    <img class="w-12 h-12 rounded-full object-cover mr-4" src="{{ friend_request.sender.profile_picture.url }}" alt="Profile Picture">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-semibold">{{ friend_request.sender.username }}</span>
+                    </div>
+                </div>
+                <div class="join bg-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div class="flex flex-col gap-2 justify-center items-center px-5">
+                        <a href="{% url 'handle_friend_request' friend_request.sender.id 'accept' %}" class="bg-amber-500 text-black py-1 px-3 rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">Accept</a>
+                        <a href="{% url 'handle_friend_request' friend_request.sender.id 'reject' %}" class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>You have no friend requests.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- send friend requests -->
+    <div class="mt-16" id="send-friends-container">
+        <h1 class="text-2xl lg:text-3xl font-bold font-mono">
+            Add Friend:
+        </h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4" id="send-friends-list">
+            {% for user in users %}
+            <div class="user-item bg-white flex justify-between rounded-lg shadow-md overflow-hidden max-w-xs w-full" data-username="{{ user.username }}">
+                <div class="flex items-center p-4">
+                    <img class="w-12 h-12 rounded-full object-cover mr-4" src="{{ user.profile_picture.url }}" alt="Profile Picture">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-semibold">{{ user.username }}</span>
+                    </div>
+                </div>
+                <div class="join bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <a href="{% url 'send_friend_request' user.id %}" class="m-auto text-white py-1 px-3 rounded-sm text-sm">Send Request</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No users found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% comment %} <script>
+    // Attach event listener to the search input field
+    document.getElementById('search').addEventListener('input', function() {
+        const searchTerm = this.value;
+        filterData(searchTerm); // Call filter function when user types in search box
+    });
+
+    // Function to filter friend requests and users based on the search term
+    function filterData(searchTerm) {
+        // Convert search term to lowercase
+        const lowerSearchTerm = searchTerm.toLowerCase();
+
+        // Get all the friend request and user items
+        const friendRequestItems = document.querySelectorAll('.friend-request-item');
+        const userItems = document.querySelectorAll('.user-item');
+
+        // Loop through each item and hide/show based on the search term
+        friendRequestItems.forEach(item => {
+            const username = item.getAttribute('data-username').toLowerCase();
+            if (username.includes(lowerSearchTerm)) {
+                item.style.display = 'block'; // Show item
+            } else {
+                item.style.display = 'none'; // Hide item
+            }
+        });
+
+        userItems.forEach(item => {
+            const username = item.getAttribute('data-username').toLowerCase();
+            if (username.includes(lowerSearchTerm)) {
+                item.style.display = 'block'; // Show item
+            } else {
+                item.style.display = 'none'; // Hide item
+            }
+        });
+    }
+
+    
+</script> {% endcomment %}
+
+<script>
+    // Attach event listener to the search input field
+    document.getElementById('search').addEventListener('input', function() {
+        const searchTerm = this.value;
+        filterData(searchTerm); // Call filter function when user types in search box
+    });
+    
+    // Function to filter friend requests and users based on the search term
+    function filterData(searchTerm) {
+        // Convert search term to lowercase
+        const lowerSearchTerm = searchTerm.toLowerCase();
+
+        // Get all the friend request and user items
+        const friendRequestItems = document.querySelectorAll('.friend-request-item');
+        const userItems = document.querySelectorAll('.user-item');
+
+        // Loop through each item and hide/show based on the search term
+        friendRequestItems.forEach(item => {
+            const username = item.getAttribute('data-username').toLowerCase();
+            if (username.includes(lowerSearchTerm)) {
+                item.style.visibility = 'visible'; // Show item
+                item.style.position = 'relative';  // Ensure it remains in flow
+            } else {
+                item.style.visibility = 'hidden'; // Hide item
+                item.style.position = 'absolute'; // Prevent item from affecting layout
+            }
+        });
+
+        userItems.forEach(item => {
+            const username = item.getAttribute('data-username').toLowerCase();
+            if (username.includes(lowerSearchTerm)) {
+                item.style.visibility = 'visible'; // Show item
+                item.style.position = 'relative';  // Ensure it remains in flow
+            } else {
+                item.style.visibility = 'hidden'; // Hide item
+                item.style.position = 'absolute'; // Prevent item from affecting layout
+            }
+        });
+    }
+</script>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+{% extends "base.html" %}
+{% block title %}| Add Friend{% endblock title %}
+{% block content %}
+
+
+<div class="w-[90%] m-auto my-5">
+        <!-- Search -->
+        <div class="flex justify-center items-center mt-2">
+            <input
+                id="search"
+                type="text"
+                class="w-[300px] p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search for friends..."
+            />
+        </div>
+
+        <!-- recieved -->
+        <div class="mt-16">
+            <h1 class="text-2xl lg:text-3xl font-bold font-mono">
+                Friend Requests:
+            </h1>
+            <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
+            >
+                <!-- Start -->
+
+                {% for friend_request in friend_requests %}
+                
+                    <div
+                        class="flex justify-between bg-white rounded-lg shadow-md overflow-hidden max-w-xs w-full"
+                    >
+                        <div class="flex items-center p-4">
+                            <img
+                                class="w-12 h-12 rounded-full object-cover mr-4"
+                                src="https://randomuser.me/api/portraits/women/20.jpg"
+                                alt="Profile Picture"
+                            />
+                            <div class="flex flex-col">
+                                <span class="text-lg font-semibold"
+                                    >{{ friend_request.sender.username }}</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="join  bg-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <div class="flex flex-col gap-2 justify-center items-center px-5">
+                                <a href="{% url 'handle_friend_request' friend_request.sender.id 'accept' %}"
+                                class="bg-amber-500 text-black py-1 px-3 rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            >
+                                Accept
+                            </a>
+                            <a href="{% url 'handle_friend_request' friend_request.sender.id 'reject' %}"
+                                class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                            >
+                                Delete
+                            </a>
+                        </div>
+
+                    </div>
+                {% empty %}
+                    <p>You have no friend requests.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- send -->
+        <div class="mt-16">
+            <h1 class="text-2xl lg:text-3xl font-bold font-mono">
+                Add Friend:
+            </h1>
+
+            <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
+            >
+                <!-- Start -->
+                {% for user in users %}
+                    <div
+                        class="bg-white flex justify-between rounded-lg shadow-md overflow-hidden max-w-xs w-full"
+                    >
+                        <div class="flex items-center p-4">
+                            <img
+                                class="w-12 h-12 rounded-full object-cover mr-4"
+                                src="https://randomuser.me/api/portraits/women/20.jpg"
+                                alt="Profile Picture"
+                            />
+                            <div class="flex flex-col">
+                                <span class="text-lg font-semibold"
+                                    >{{ user }}</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="join bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <a href="{% url 'send_friend_request' user.id %}"
+                                class=" m-auto text-white py-1 px-3 rounded-sm text-sm"
+                            >
+                                Send Request
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No user found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div> 
+
+    
+
+{% endblock content %} {% endcomment %}
+
+{% comment %} <script>
+    // Get friend requests and users from Django context
+    const friendRequests = {% autoescape off %}{{ friend_requests|json_script:"friend_requests" }}{% endautoescape %};
+    const users = {% autoescape off %}{{ users|json_script:"users" }}{% endautoescape %};
+
+    // Log the friend requests and users
+    console.log("Friend Requests:", friendRequests);
+    console.log("Users:", users);
+</script>  {% endcomment %}

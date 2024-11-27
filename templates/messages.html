@@ -1,0 +1,40 @@
+{% if messages %}
+    {% for message in messages %}
+        <div id="message-{{ forloop.counter }}" class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mt-2" role="alert">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center">
+                    <div class="py-1">
+                        <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold">Success!</p>
+                        <p class="text-sm">{{ message }}</p>
+                    </div>
+                </div>
+
+                <button type="button" class="text-teal-500 hover:text-teal-700 ml-4" onclick="closeMessage('message-{{ forloop.counter }}')">
+                    <svg class="fill-current h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            setTimeout(function() {
+                closeMessage('message-{{ forloop.counter }}');
+            }, 5000); 
+
+            function closeMessage(messageId) {
+                let messageElement = document.getElementById(messageId);
+                messageElement.classList.add('opacity-0'); 
+                setTimeout(function() {
+                    messageElement.style.display = 'none';
+                }, 500); 
+            }
+        </script>
+    {% endfor %}
+{% endif %}
+

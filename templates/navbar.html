@@ -1,0 +1,332 @@
+{% comment %} 
+<div style=" display: flex; " >
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="{% url 'add_friend' %}">Add Friend</a>
+    </li>
+  </ul>
+  
+  {% if request.user.is_authenticated %}
+      <a href="{% url 'home' %}" class="btn btn-outline-success">Profile</a>
+      <a href="{% url 'logout' %}" class="btn btn-outline-warning">Logout</a>
+  {% else %}
+      <a href="{% url 'register' %}" class="btn btn-outline-success">Signup</a>
+      <a href="{% url 'login' %}" class="btn btn-outline-success">Login</a>
+  {% endif  %}
+
+</div>
+<hr> {% endcomment %}
+
+
+<!-- Navbar Section -->
+<header class="w-[90%] m-auto mt-5">
+  <nav class="bg-gray-800">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div
+              class="relative flex h-16 items-center justify-between"
+          >
+              <div
+                  class="absolute inset-y-0 left-0 flex items-center sm:hidden"
+              >
+                  <!-- Mobile menu button-->
+                  <button
+                      type="button"
+                      class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      aria-controls="mobile-menu"
+                      aria-expanded="false"
+                  >
+                      <span class="absolute -inset-0.5"></span>
+                      <span class="sr-only">Open main menu</span>
+                      <!-- Menu icon -->
+                      <svg
+                          class="block size-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                      >
+                          <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                          />
+                      </svg>
+                  </button>
+              </div>
+
+              <div
+                  class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
+              >
+                  <div class="flex shrink-0 items-center">
+                      <h1 class="text-4xl text-blue-600 font-bold">🗪</h1>
+                      <p>Talk</p>
+                  </div>
+
+                  <!-- Navbar Links for Desktop -->
+                  <div class="hidden sm:ml-6 sm:block">
+                      <div class="flex space-x-4">  
+                        {% if request.user.is_authenticated %}
+                         <a
+                              href="{% url 'home' %}"
+                              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                              >Home</a
+                          >
+                          <a
+                              href="{% url 'add_friend' %}"
+                              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                              >Add Friends</a
+                          >
+                        {% else %}
+                        <a
+                            href="/"
+                            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                            >Home</a
+                        >
+                        {% endif %}
+                          
+                      </div>
+                  </div>
+              </div>
+
+              <div
+                  class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
+              >
+                  
+
+                  {% if not request.user.is_authenticated %}
+                    <a
+                    href="{% url 'login' %}"
+                    type="button"
+                    class="sm:block btn hidden ml-3 rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+                    aria-current="page"
+                    >Login</a
+                    >
+                    <a
+                    href="{% url 'register' %}"
+                    type="button"
+                    class="sm:block btn hidden ml-3 rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+                    aria-current="page"
+                    >Sign Up</a
+                    >
+                  {% endif %}
+                  
+                  
+                  {% if request.user.is_authenticated %}
+                    <!-- Profile Dropdown -->
+                    <div class="relative ml-3">
+                        <button
+                            type="button"
+                            class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                            id="user-menu-button"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                        >
+                            <img
+                                class="h-8 w-8 rounded-full"
+                                src="{{ request.user.profile_picture.url }}" 
+                                alt=""
+                            />
+                        </button>
+
+                        <!-- User Menu Dropdown (Hidden for now) -->
+                        <div
+                            class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="user-menu-button"
+                            tabindex="-1"
+                            id="user-menu"
+                        >
+                            <span  
+                                class="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="profile-modal-btn"
+                                >Your Profile</span
+                            >
+                            <a
+                                href="{% url 'logout' %}"
+                                class="block px-4 py-2 text-sm text-gray-700"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="user-menu-item-1"
+                                >Logout</a
+                            >
+                        </div>
+                    </div>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="sm:hidden hidden" id="mobile-menu">
+          <div class="space-y-1 px-2 pb-3 pt-2">
+              {% if request.user.is_authenticated %}
+                <a
+                    href="{% url 'home' %}"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >Home</a
+                >
+                <a
+                    href="{% url 'add_friend' %}"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >Add Friends</a
+                >
+              
+                {% else %}
+                <a
+                    href="/"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >Home</a
+                >
+                <a
+                href="{% url 'login' %}"
+                type="button"
+                class="block btn rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white text-center w-[100px]"
+                aria-current="page"
+                >Login</a
+                >
+                <a
+                type="button"
+                href="{% url 'register' %}"
+                class="block btn rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white text-center w-[100px]"
+                aria-current="page"
+                >Sign up</a
+                >
+              {% endif %}
+          </div>
+      </div>
+  </nav>
+</header>
+
+
+<div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-10">
+    <div class="bg-white rounded-lg p-6 w-80 max-w-md">
+        <div>
+            <img
+            id="profile-img"
+            class="h-16 w-16 rounded-full m-auto"
+            src="{{ request.user.profile_picture.url }}"
+            alt="{{ request.user.username }}"
+            />
+            <i id="edit-icon" class="fa-regular fa-pen-to-square relative m-auto text-black font-bold left-[155px] -top-5 cursor-pointer"></i>
+        </div>
+
+        <h2 class="text-xl text-black font-bold text-center ">{{ request.user.username }}</h2>
+        <p class="text-gray-500 text-center">{{ request.user.email }}</p>
+
+        <!-- Buttons for submitting or closing -->
+        <div class="flex justify-end mt-2">
+            <button id="close-profile-modal-btn" class="text-black border-2 px-4 py-2 rounded-md hover:bg-gray-200">Cancel</button>
+        </div>
+        {% comment %} <input type="file" value="{{ csrf_token }}" name="csrfmiddlewaretoken" id="file-input" class="hidden" accept="image/*" /> {% endcomment %}
+        <input type="file" id="file-input" class="hidden" accept="image/*" />
+        {% csrf_token %}
+    </div>
+</div>
+
+<script>
+    const profileImg = document.getElementById('profile-img');
+    const editIcon = document.getElementById('edit-icon');
+    const fileInput = document.getElementById('file-input');
+
+    editIcon.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            profileImg.src = e.target.result; 
+        };
+        reader.readAsDataURL(file);
+
+        updateProfilePicture(file);
+    }
+    });
+
+    function updateProfilePicture(file) {
+    const formData = new FormData();
+    formData.append('profile_picture', file);
+
+    fetch('{% url "update_profile_picture" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value 
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Profile picture updated!');
+            modal.classList.add('hidden'); 
+            
+            location.reload();
+
+        } else {
+            console.log('Failed to update profile picture');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<script>
+    const profile_modal = document.getElementById('profile-modal');
+    const profile_modal_btn = document.getElementById('profile-modal-btn');
+    const close_profile_modal_btn = document.getElementById('close-profile-modal-btn');
+
+    profile_modal_btn.addEventListener('click', function() {
+        profile_modal.classList.remove('hidden');
+    });
+
+    close_profile_modal_btn.addEventListener('click', function() {
+        profile_modal.classList.add('hidden');
+    });
+
+    window.addEventListener('click', function(e) {
+        if (e.target === profile_modal) {
+            profile_modal.classList.add('hidden');
+        }
+    });
+</script>
+
+<script>
+    document
+      .getElementById("user-menu-button")
+      .addEventListener("click", (event) => {
+        event.stopPropagation();
+        const menu = document.getElementById("user-menu");
+        menu.classList.toggle("hidden");
+      });
+  
+    document.addEventListener("click", (event) => {
+      const menu = document.getElementById("user-menu");
+      const menuButton = document.getElementById("user-menu-button");
+
+      if (!menu.contains(event.target) && !menuButton.contains(event.target)) {
+        menu.classList.add("hidden");
+      }
+    });
+</script>
+  
+
+<script>
+  // Toggle hamburger menu visibility on click
+  const hamburgerButton = document.querySelector('button[aria-controls="mobile-menu"]');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  hamburgerButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      const isExpanded = mobileMenu.classList.contains('hidden') ? 'false' : 'true';
+      hamburgerButton.setAttribute('aria-expanded', isExpanded);
+  });
+</script>

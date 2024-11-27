@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}| Chat{% endblock title %}
+{% block content %}
+
+
+    <div class="w-[90%] m-auto mt-5">
+            <div>
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl lg:text-3xl font-bold font-mono">Chats</h1>
+                    <button id="open-modal-btn" class="px-4 py-1 border border-gray-100 text-white  rounded-md hover:bg-gray-100 hover:text-black focus:outline-none">✙</button>
+                </div>
+        
+                <div id="chat-groups" class="p-3 mb-9 pb-20">     
+        
+                    {% comment %} <div
+                        class="flex justify-between items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
+                    >
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gray-300 rounded-full mr-3">
+                                <img
+                                    src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
+                                    alt="User Avatar"
+                                    class="w-12 h-12 rounded-full"
+                                />
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="text-lg font-semibold">Alice</h2>
+                                <p class="text-gray-400">Hoorayy!!</p>
+                                <p class="text-gray-500">Sep. 06, 2024, 11:00 AM</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900"
+                        >
+                            20
+                        </div>
+                    </div> {% endcomment %}
+                    
+                </div>
+            </div>
+        </div>
+
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-80 max-w-md">
+            <h2 class="text-xl text-black font-bold mb-4">Create Group</h2>
+            
+            <div class="mb-4">
+                <input type="text" id="room-name-input" class="w-full px-3 py-2 border bg-white text-black border-gray-300 rounded-md" placeholder="Type group name">
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">Cancel</button>
+                <button id="room-name-submit" class="btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+    
+        openModalBtn.addEventListener('click', function() {
+            modal.classList.remove('hidden');
+        });
+    
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+    
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    </script>
+    
+    
+    <script>
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.key === 'Enter') {  // enter, return
+                document.querySelector('#room-name-submit').click();
+            }
+        };
+
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var group_name = document.querySelector('#room-name-input').value;
+            window.location.pathname = '/create_groupchat/' + group_name + '/';
+        };
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(e){
+            console.log(window.location.host);
+            const homeSocket = new WebSocket(
+                'ws://' 
+                + window.location.host 
+                + '/ws/message_notification/' 
+            );
+
+            homeSocket.onopen = function() {
+                // console.log('WebSocket connection established.');
+                // Send a message once the connection is open
+                homeSocket.send(JSON.stringify({
+                    'body': 'message_notification'
+                }));
+            };
+
+            homeSocket.onclose = function(e) {
+                // console.error('WebSocket connection closed unexpectedly:', e.reason);
+            };
+
+            homeSocket.onerror = function(e) {
+                // console.error('WebSocket error observed:', e);
+            };
+
+            homeSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                // console.log('Message received:', data.data);
+            
+                // Clear the container before adding new content
+                const container = document.getElementById('chat-groups');
+                container.innerHTML = '';  // Clear existing content
+            
+                // Use DocumentFragment to improve performance
+                const fragment = document.createDocumentFragment();
+            
+                data.forEach(group => {
+
+                    const groupDiv = document.createElement('div');
+                    groupDiv.classList.add('flex', 'justify-between', 'items-center', 'mb-4', 'cursor-pointer', 'hover:text-black', 'hover:bg-gray-50', 'p-2', 'rounded-md');  
+
+                    groupDiv.onclick = () => {
+                        window.location.href = `/create_groupchat/${encodeURIComponent(group.group_name)}/`;
+                    };
+    
+                    // Avatar and Group Details
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.classList.add('flex', 'items-center');
+    
+                    const avatarImage = document.createElement('div');
+                    avatarImage.classList.add('w-12', 'h-12', 'bg-gray-300', 'rounded-full', 'mr-3');
+                    avatarImage.innerHTML = `<img src="${group.profile_picture }" alt="👤" class="w-12 h-12 rounded-full" />`;
+    
+                    avatarDiv.appendChild(avatarImage);
+    
+                    const groupDetails = document.createElement('div');
+                    groupDetails.classList.add('flex-1');
+                    let groupTitle = '';
+                    if (group.is_private) {
+                        const filteredMembers = group.members.filter(member => member !== '{{ request.user.username }}');
+                        groupTitle = filteredMembers.join(', ') || 'No other members';
+                    } else {
+                        groupTitle = group.groupchat_name;
+                    }
+                    groupDetails.innerHTML = `
+                        <h2 class="text-lg font-semibold">${groupTitle}</h2>
+                        <p class="text-gray-400">${group.last_message_data.body || 'No new messages'}</p>
+                        <p class="text-gray-500">${group.last_message_data.created_at || 'No messages yet'}</p>
+                    `;
+                    avatarDiv.appendChild(groupDetails);
+    
+                    groupDiv.appendChild(avatarDiv);
+    
+                    // Message Count Notification
+                    if(group.not_seen != 0){
+                        const notificationDiv = document.createElement('div');
+                        notificationDiv.classList.add('flex', 'items-center', 'justify-center', 'w-6', 'h-6', 'text-xs', 'font-bold', 'text-white', 'bg-red-500', 'border-2', 'border-white', 'rounded-full', '-top-2', '-end-2');
+                        notificationDiv.innerHTML = `${group.not_seen}`;
+                        groupDiv.appendChild(notificationDiv);
+                    }
+                    // Append the constructed group div to the fragment
+                    fragment.appendChild(groupDiv);
+                });
+            
+                // Append DocumentFragment to the container
+                container.appendChild(fragment);
+            };
+            
+
+        });
+        
+    </script>
+{% endblock content %}

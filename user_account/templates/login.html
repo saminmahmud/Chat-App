@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}| Login{% endblock title %}
+{% block content %}
+
+
+{% if form.non_field_errors %} 
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger mt-2 w-[90%] m-auto" role="alert">
+            <strong>Error!</strong>
+            <p class="mb-0">{{ error }}</p>
+        </div>    
+    {% endfor %} 
+{% endif %}
+
+
+
+<div class="flex items-center justify-center w-[90%] m-auto mt-2">
+    <div class=" font-[sans-serif] w-full">
+      <div class="flex flex-col items-center justify-center py-6 px-4">
+        <div class="w-full max-w-md">
+          <div class="p-8 rounded-2xl bg-white shadow">
+            <h2 class="text-gray-800 text-center text-2xl font-bold">Login</h2>
+            <form method="post" class="mt-8 space-y-4">
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %} 
+                    {{ hidden_field.errors }} {{ hidden_field }} 
+                {% endfor %} 
+
+                {% for field in form.visible_fields %}
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="text-gray-800 text-sm mb-2 block">{{ field.label }}</label>
+                    <div class="relative flex items-center">
+                        <input 
+                            type="{{ field.widget_type }}" 
+                            class="w-full bg-white text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" 
+                            id="{{ field.id_for_label }}" 
+                            name="{{ field.name }}" 
+                            placeholder="{{ field.label }}" 
+                        >
+                    </div>
+
+                    <!-- Display field errors -->
+                    {% if field.errors %}
+                        <div class="text-red-600 text-sm italic pt-2">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+  
+              <div class="!mt-8">
+                <button type="submit" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                  Login
+                </button>
+              </div>
+              <p class="text-gray-800 text-sm !mt-8 text-center">Don't Have an account? <a href="{% url 'register' %}" class="text-blue-600 hover:underline ml-1 whitespace-nowrap font-semibold">Sign up here</a></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
