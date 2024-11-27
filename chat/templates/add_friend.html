@@ -64,44 +64,6 @@
     </div>
 </div>
 
-{% comment %} <script>
-    // Attach event listener to the search input field
-    document.getElementById('search').addEventListener('input', function() {
-        const searchTerm = this.value;
-        filterData(searchTerm); // Call filter function when user types in search box
-    });
-
-    // Function to filter friend requests and users based on the search term
-    function filterData(searchTerm) {
-        // Convert search term to lowercase
-        const lowerSearchTerm = searchTerm.toLowerCase();
-
-        // Get all the friend request and user items
-        const friendRequestItems = document.querySelectorAll('.friend-request-item');
-        const userItems = document.querySelectorAll('.user-item');
-
-        // Loop through each item and hide/show based on the search term
-        friendRequestItems.forEach(item => {
-            const username = item.getAttribute('data-username').toLowerCase();
-            if (username.includes(lowerSearchTerm)) {
-                item.style.display = 'block'; // Show item
-            } else {
-                item.style.display = 'none'; // Hide item
-            }
-        });
-
-        userItems.forEach(item => {
-            const username = item.getAttribute('data-username').toLowerCase();
-            if (username.includes(lowerSearchTerm)) {
-                item.style.display = 'block'; // Show item
-            } else {
-                item.style.display = 'none'; // Hide item
-            }
-        });
-    }
-
-    
-</script> {% endcomment %}
 
 <script>
     // Attach event listener to the search input field

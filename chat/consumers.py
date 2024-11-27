@@ -4,10 +4,8 @@ from .models import *
 import json
 from django.template.loader import render_to_string
 from asgiref.sync import async_to_sync
-# from django.contrib.auth import get_user_model
-# User = get_user_model()
-from django.conf import settings  
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class ChatroomConsumer(WebsocketConsumer):
     def connect(self):

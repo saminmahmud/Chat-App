@@ -12,16 +12,8 @@ from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
-# from django.contrib.auth import get_user_model
-# from django.utils.functional import LazyObject
-
-# class LazyUserModel(LazyObject):
-#     def _setup(self):
-#         self._wrapped = get_user_model()
-        
-# User = LazyUserModel()
-from django.conf import settings  
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 

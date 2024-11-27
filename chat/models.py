@@ -2,16 +2,8 @@ from django.db import models
 import shortuuid
 import os
 from PIL import Image
-# from django.contrib.auth import get_user_model
-# from django.utils.functional import LazyObject
-
-# class LazyUserModel(LazyObject):
-#     def _setup(self):
-#         self._wrapped = get_user_model()
-
-# User = LazyUserModel()
-from django.conf import settings  
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class ChatGroup(models.Model):

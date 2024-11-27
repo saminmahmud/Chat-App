@@ -15,16 +15,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 
-# from django.contrib.auth import get_user_model
-# from django.utils.functional import LazyObject
-
-# class LazyUserModel(LazyObject):
-#     def _setup(self):
-#         self._wrapped = get_user_model()
-        
-# User = LazyUserModel()
-from django.conf import settings  
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 def UserRegistration(request):
