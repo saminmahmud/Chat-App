@@ -67,7 +67,7 @@ def UserRegistration(request):
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
 
                 # Get the domain name for the confirmation link
-                confirm_link = f"https://talk-34o4.onrender.com/active/{uid}/{token}/"  # Confirmation URL
+                confirm_link = f"https://talk-dlc8.onrender.com/active/{uid}/{token}/"  # Confirmation URL
 
                 # Send the confirmation email
                 email_subject = "Confirm Your Email"
